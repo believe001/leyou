@@ -1,0 +1,14 @@
+server:
+  port: 10086
+spring:
+  application:
+    name:
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:${server.port}/eureka
+    register-with-eureka: false # 关闭自我注册
+    fetch-registry: false # 关闭自动拉取
+  server:
+    enable-self-preservation: false #关闭自我保护
+    eviction-interval-timer-in-ms: 1000 #每隔5s进行服务列表的清理
