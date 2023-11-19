@@ -37,10 +37,8 @@ public class BrandController {
         if (CollectionUtils.isEmpty(brandPageResult.getItems())) {
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(brandPageResult);
     }
-
     /**
      * 保存品牌信息
      * @param brand
@@ -49,7 +47,6 @@ public class BrandController {
      */
     @PostMapping
     public ResponseEntity<Void> saveBrand(Brand brand, @RequestParam("cids") List<Long> cids){
-//        System.out.println(brand);
         this.brandService.saveBrand(brand, cids);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -66,6 +63,20 @@ public class BrandController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(brands);
+    }
+
+    /**
+     * 根据id查询品牌
+     * @param id
+     * @return
+     */
+    @GetMapping("{id}")
+    public ResponseEntity<Brand> queryBrandById(@PathVariable("id") Long id){
+        Brand brand = this.brandService.queryBrandById(id);
+        if(brand == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(brand);
     }
 
 

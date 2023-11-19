@@ -18,6 +18,12 @@ import java.util.List;
 public class CategotyController {
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * 根据父id查询所有子节点
+     * @param pid
+     * @return
+     */
     @GetMapping("list")
     public ResponseEntity<List<Category>> queryCategoriesByPid(@RequestParam(value = "pid", defaultValue = "0") Long pid){
         //相应400 badRequest
@@ -30,5 +36,19 @@ public class CategotyController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(categories);
+    }
+
+    /**
+     * 根据ids查询种类名称列表
+     * @param ids
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<List<String>> queryNamesByIds(@RequestParam("ids") List<Long> ids){
+        List<String> names = this.categoryService.queryNamesByIdList(ids);
+        if(CollectionUtils.isEmpty(names)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(names);
     }
 }

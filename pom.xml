@@ -7,6 +7,10 @@
     <groupId>com.leyou.parent</groupId>
     <artifactId>leyou</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>leyou-search</module>
+        <module>leyou-goods-web</module>
+    </modules>
     <packaging>pom</packaging>
 
     <name>leyou</name>

@@ -11,6 +11,7 @@ public class LeyouCorsConfig {
     public CorsFilter getCorsFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://manage.leyou.com");
+        corsConfiguration.addAllowedOrigin("http://www.leyou.com");
         corsConfiguration.setAllowCredentials(true);
         //3) 允许的请求方式
         corsConfiguration.addAllowedHeader("*");

@@ -9,7 +9,15 @@ spring:
     password: believe
     hikari:
       max-lifetime: 28830000 # 一个连接的生命时长（毫秒），超时且没被使用就会被释放掉。缺省值：30分钟
-      maximum-pool-size: 9  # 连接池中允许的最大连接数。缺省值：10
+      maximum-pool-size: 9
+  rabbitmq:
+    host:  192.168.164.128
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+    template:
+      exchange: LEYOU.ITEM.EXCHANGE # 如果发送方没有指定exchange默认使用这个
+    publisher-confirms: true
 eureka:
   client:
     service-url:

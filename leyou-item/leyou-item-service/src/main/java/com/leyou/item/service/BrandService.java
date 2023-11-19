@@ -7,12 +7,9 @@ import com.leyou.item.mapper.BrandMapper;
 import com.leyou.item.pojo.Brand;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import tk.mybatis.mapper.entity.Example;
-import tk.mybatis.mapper.util.StringUtil;
 
 import java.util.List;
 @Service
@@ -44,9 +41,9 @@ public class BrandService {
             example.setOrderByClause(sortBy + " " + (desc ? "desc" : "asc"));
         }
         // 包装成pageInfo
-        List<Brand> brands = brandMapper.selectByExample(example);
-        PageInfo<Brand> brandPageInfo = new PageInfo<>(brands);
-        // 包装成分页结果集返回
+        List<Brand> brands = brandMapper.selectByExample(example);// 这里用了PageHelper，查出来也只有5条数据。问题：为什么变成了List Page？？
+        PageInfo<Brand> brandPageInfo = new PageInfo<>(brands);// 用pageinfo主要是想得到总共的条数
+        // 包装成分页结果集返回(结果集中只包含当前页的数据，要下一页的数据需要重新请求)
         return new PageResult<Brand>(brandPageInfo.getTotal(), brandPageInfo.getList());
     }
 
@@ -57,10 +54,7 @@ public class BrandService {
      */
     @Transactional
     public void saveBrand(Brand brand, List<Long> cids) {
-//        System.out.println("品牌"+brand);
-//        System.out.println("种类:"+cids);
         // 新增brand
-//        System.out.println(brand);
         this.brandMapper.insertSelective(brand);
 //        System.out.println(brand);//上面一句执行后，主键会自动赋值
 
@@ -77,5 +71,14 @@ public class BrandService {
      */
     public List<Brand> queryBrandsByCid(Long cid) {
         return this.brandMapper.queryBrandsByCid(cid);
+    }
+
+    /**
+     * 根据id查询品牌
+     * @param id
+     * @return
+     */
+    public Brand queryBrandById(Long id) {
+        return this.brandMapper.selectByPrimaryKey(id);
     }
 }

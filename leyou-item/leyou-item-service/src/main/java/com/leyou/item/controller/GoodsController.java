@@ -3,8 +3,10 @@ package com.leyou.item.controller;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.bo.SpuBo;
 import com.leyou.item.pojo.Sku;
+import com.leyou.item.pojo.Spu;
 import com.leyou.item.pojo.SpuDetail;
 import com.leyou.item.service.SpuService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,10 @@ public class GoodsController {
      */
     @GetMapping("spu/page")
     public ResponseEntity<PageResult<SpuBo>> querySpuBoByPage(
-            @RequestParam(name = "key", required = false) String key,
-            @RequestParam(name = "saleable", required = false) Boolean saleable,
-            @RequestParam(name = "page", defaultValue = "1") Integer page,
-            @RequestParam(name = "rows", defaultValue = "5") Integer rows
+            @RequestParam(value = "key", required = false) String key,
+            @RequestParam(value = "saleable", required = false) Boolean saleable,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "rows", defaultValue = "5") Integer rows
     ){
         PageResult<SpuBo> pageResult = this.spuService.querySpuBoByPage(key, saleable, page, rows);
 
@@ -93,7 +95,13 @@ public class GoodsController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-
+    }
+    @GetMapping("spu/{id}")
+    public ResponseEntity<Spu> querySpuById(@PathVariable("id") Long id){
+        Spu spu = this.spuService.querySpuById(id);
+        if(spu == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(spu);
     }
 }

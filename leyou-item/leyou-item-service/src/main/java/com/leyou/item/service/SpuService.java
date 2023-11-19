@@ -7,6 +7,7 @@ import com.leyou.item.bo.SpuBo;
 import com.leyou.item.mapper.*;
 import com.leyou.item.pojo.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class SpuService {
     private SkuMapper skuMapper;
     @Autowired
     private StockMapper stockMapper;
+    @Autowired
+    private AmqpTemplate amqpTemplate;
     /**
      * 根据key和上架与否查询
      * @param key
@@ -64,7 +67,7 @@ public class SpuService {
                     SpuBo spuBo = new SpuBo();
                     BeanUtils.copyProperties(spu, spuBo);
                     Brand brand = this.brandMapper.selectByPrimaryKey(spu.getBrandId());
-                    List<String> cnames = categoryService.queryCategoriesByIdList(Arrays.asList(spu.getCid1(), spu.getCid2(), spu.getCid3()));
+                    List<String> cnames = categoryService.queryNamesByIdList(Arrays.asList(spu.getCid1(), spu.getCid2(), spu.getCid3()));
                     String cname = StringUtils.join(cnames, "-");
                     spuBo.setCname(cname);
                     spuBo.setBname(brand.getName());
@@ -101,6 +104,16 @@ public class SpuService {
         spuDetail.setSpuId(spuBo.getId());
         this.spuDetailMapper.insertSelective(spuDetail);
         saveSkusAndStocks(spuBo);
+        // 向消息队列发送消息，新增对象的id
+        sendMsg("insert", spuBo.getId());
+    }
+
+    private void sendMsg(String type, Long spuId) {
+        try{
+            this.amqpTemplate.convertAndSend("item." + type, spuId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void saveSkusAndStocks(SpuBo spuBo) {
@@ -179,5 +192,18 @@ public class SpuService {
         //更新spu_detail
         this.spuDetailMapper.updateByPrimaryKeySelective(spuBo.getSpuDetail());
 
+        // 向消息队列发送消息，修改对象的id
+        sendMsg("update", spuBo.getId());
+
     }
+
+    /**
+     * 根据spuid查询spu
+     * @param id
+     * @return
+     */
+    public Spu querySpuById(Long id){
+        return this.spuMapper.selectByPrimaryKey(id);
+    }
+
 }

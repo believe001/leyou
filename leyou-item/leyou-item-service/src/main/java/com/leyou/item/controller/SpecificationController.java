@@ -22,15 +22,32 @@ public class SpecificationController {
      */
     @GetMapping("groups/{cid}")
     public ResponseEntity<List<SpecGroup>> queryGroupsByCid(@PathVariable("cid") Long cid){
-//        System.out.println("经过了grout/"+cid);
         List<SpecGroup> specGroups = specificationService.queryGroupsByCid(cid);
         if(CollectionUtils.isEmpty(specGroups)){
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(specGroups);
     }
+
     /**
-     * 根据分组gid查询参数
+     * 根据分类id查询参数及组内参数组
+     * @param cid
+     * @return
+     */
+    @GetMapping("groups/params/{cid}")
+    public ResponseEntity<List<SpecGroup>> queryGroupsWithParams(@PathVariable("cid") Long cid){
+        List<SpecGroup> list = specificationService.queryGroupsWithParams(cid);
+        if(CollectionUtils.isEmpty(list)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(list);
+    }
+
+
+
+
+    /**
+     * 根据条件查询参数
      * @param gid
      * @return
      */

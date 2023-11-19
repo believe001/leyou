@@ -17,7 +17,7 @@ public class CategoryService {
     private CategoryMapper categoryMapper;
 
     /**
-     * 根据id查询种类集合
+     * 根据parentId查询种类集合
      * @param pid
      * @return
      */
@@ -32,11 +32,12 @@ public class CategoryService {
      * @param idList
      * @return
      */
-    public List<String> queryCategoriesByIdList(List<Long> idList){
+    public List<String> queryNamesByIdList(List<Long> idList){
         List<Category> categories = categoryMapper.selectByIdList(idList);
         return categories.stream().map(
                 ct-> ct.getName()
         ).collect(Collectors.toList());
     }
+
 
 }

@@ -11,4 +11,5 @@ eureka:
 zuul:
   prefix: /api # 路由前缀
   routes:
-    item-service: /item/** # 商品的微服务的映射路径
+    item-service: /item/** # 路由商品服务
+    search-service: /search/** # 路由到搜索微服务
