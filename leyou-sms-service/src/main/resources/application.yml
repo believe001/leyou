@@ -10,6 +10,6 @@ spring:
     virtual-host: /leyou
 leyou:
   sms:
-    accessKeyId: LTAI5t8dYxPAA8xa3Evdr6ez
-    accessKeySecret: j6wZAJwKbCnHeF1NO9DYJiwjBajASI
+#    accessKeyId: LTAI5t8dYxPAA8xa3Evdr6ez # 已禁用
+#    accessKeySecret: j6wZAJwKbCnHeF1NO9DYJiwjBajASI # 已禁用
 
