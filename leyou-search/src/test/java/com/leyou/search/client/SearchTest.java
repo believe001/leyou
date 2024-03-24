@@ -53,7 +53,6 @@ public class SearchTest {
             }).collect(Collectors.toList());
             // 导入到es中
             this.goodsRepository.saveAll(goodsList);
-
             ++page;
             rows = items.size();
         }while (rows == 100);
