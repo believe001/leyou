@@ -2,7 +2,6 @@ package com.leyou.search.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.leyou.item.bo.SpuBo;
 import com.leyou.item.pojo.*;
 import com.leyou.search.GoodsRepository;
 import com.leyou.search.client.BrandClient;
@@ -60,23 +59,23 @@ public class SearchService {
      */
     public SearchResult search(SearchRequest request) {
         // 自定义查询构建器
-        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
         // 添加查询条件
         BoolQueryBuilder boolQueryBuilder = buildBooleanQueryBuilder(request);
 //        QueryBuilder basicQuery = QueryBuilders.matchQuery("all", request.getKey()).operator(Operator.AND);
-        nativeSearchQueryBuilder.withQuery(boolQueryBuilder);
+        queryBuilder.withQuery(boolQueryBuilder);
         // 添加分页,注意es中page第一页为0
-        nativeSearchQueryBuilder.withPageable(PageRequest.of(request.getPage() -1 , request.getDefaultSize()));
+        queryBuilder.withPageable(PageRequest.of(request.getPage() -1 , request.getDefaultSize()));
         // 添加结果过滤
-        nativeSearchQueryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{"id", "skus", "subTitle"}, null));
+        queryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{"id", "skus", "subTitle"}, null));
         // 因为要对搜索结果对cid（分类id）和bid(品牌)分别进行聚合，因此补充
         String categoryAggName = "categories";//定义聚合名称
         String brandAggName = "brands";
         // 添加聚合
-        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(categoryAggName).field("cid3"));
-        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(brandAggName).field("brandId"));
+        queryBuilder.addAggregation(AggregationBuilders.terms(categoryAggName).field("cid3"));
+        queryBuilder.addAggregation(AggregationBuilders.terms(brandAggName).field("brandId"));
         // 执行搜索
-        AggregatedPage<Goods> goodsPage = (AggregatedPage<Goods>) this.goodsRepository.search(nativeSearchQueryBuilder.build());
+        AggregatedPage<Goods> goodsPage = (AggregatedPage<Goods>) this.goodsRepository.search(queryBuilder.build());
         List<Map<String, Object>> categories = getCategoryAggResult(goodsPage.getAggregation(categoryAggName));
         // 当种类只有一种时，才会聚合规格参数
         List<Map<String, Object>> specs = new ArrayList<>();
@@ -90,13 +89,13 @@ public class SearchService {
     }
 
     /**
-     * 根据请求的参数进行构建bool查询构建器
+     * 根据请求的参数进行构建bool查询构建器,这里是为了聚合后的参数也就是过滤参数进行过滤查询
      * @param request
      * @return
      */
     private BoolQueryBuilder buildBooleanQueryBuilder(SearchRequest request) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        // 添加基本查询条件
+        // 添加基本查询条件matchQuery会对搜索词分词,.operator(Operator.AND)表示必须包含所有的分词结果。must表示必须满足括号中的条件
         boolQueryBuilder.must(QueryBuilders.matchQuery("all", request.getKey()).operator(Operator.AND));
 
         // 添加过滤查询条件
@@ -113,13 +112,13 @@ public class SearchService {
                 // 如果是规格参数名，过滤字段名：specs.key.keyword
                 key = "specs." + entry.getKey() + ".keyword";
             }
-            boolQueryBuilder.filter(QueryBuilders.termQuery(key, entry.getValue()));
+            boolQueryBuilder.filter(QueryBuilders.termQuery(key, entry.getValue()));// termQuery不会对搜索词分词
         }
         return boolQueryBuilder;
-
     }
 
     /**
+     * 一旦商品分类确定了，就可以根据商品分类查询出哪些参数。
      * 根据分类id和查询条件进行查询，并根据spec进行分别聚合，返回聚合后的列表
      * @param id
      * @param basicQuery
@@ -141,9 +140,8 @@ public class SearchService {
         AggregatedPage<Goods> aggregatedPage = (AggregatedPage<Goods>)this.goodsRepository.search(queryBuilder.build());
         Map<String, Aggregation> stringAggregationMap = aggregatedPage.getAggregations().asMap();
         // 遍历所有的聚合，对返回值进行赋值
-        Set<Map.Entry<String, Aggregation>> entries = stringAggregationMap.entrySet();
         List<Map<String, Object>> specs = new ArrayList<>();
-        for(Map.Entry<String, Aggregation> entry : entries){
+        for(Map.Entry<String, Aggregation> entry : stringAggregationMap.entrySet()){
             Map<String, Object> spec = new HashMap<>();
             spec.put("k", entry.getKey());
 

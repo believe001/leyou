@@ -1,0 +1,15 @@
+server:
+  port: 8087
+spring:
+  application:
+    name: sms-service
+  rabbitmq:
+    host: 192.168.164.128
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+leyou:
+  sms:
+    accessKeyId: LTAI5t8dYxPAA8xa3Evdr6ez
+    accessKeySecret: j6wZAJwKbCnHeF1NO9DYJiwjBajASI
+

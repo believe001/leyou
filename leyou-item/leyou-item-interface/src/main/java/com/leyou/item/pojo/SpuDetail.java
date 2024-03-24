@@ -7,6 +7,7 @@ import javax.persistence.Table;
 public class SpuDetail {
     @Id
     private Long spuId;// 对应的SPU的id
+
     private String description;// 商品描述
     private String specialSpec;// 商品特殊规格的名称及可选值模板
     private String genericSpec;// 商品的全局规格属性

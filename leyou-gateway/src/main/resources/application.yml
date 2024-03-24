@@ -13,3 +13,20 @@ zuul:
   routes:
     item-service: /item/** # 路由商品服务
     search-service: /search/** # 路由到搜索微服务
+    user-service: /user/** # 路由到用户服务
+    auth-service: /auth/** # 路由到鉴权中心
+    cart-service: /cart/**
+  add-host-header: true # 允许携带域名信息，避免cookie设置失败
+  sensitive-headers: # 配置禁止默认敏感头信息，避免cookie设置失败
+leyou:
+  jwt: # 在网关里面进行token的验证好处是后面微服务可以不用验证了。否则微服务中可能多次进行token验证（多个controller里面都要写）
+    pubKeyPath:  E:\\tmp_rsa\\rsa.pub # 公钥地址
+    cookieName: LY_TOKEN # cookie的名称
+  filter:
+    allowPaths: # 允许通过的路由白名单
+      - /api/auth # 以-开头的代表集合 值
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/code
+      - /api/item

@@ -1,0 +1,26 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/leyou
+    username: believe
+    password: believe
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 192.168.164.128
+  rabbitmq:
+    host: 192.168.164.128
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 15
+mybatis:
+  type-aliases-package: com.leyou.user.pojo
