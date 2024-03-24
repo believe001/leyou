@@ -4,7 +4,8 @@
 /.settings/
 /.vscode/
 /bin/
-
+/leyou-cart
+/leyou-order
 .classpath
 .project
 .settings
